@@ -1,0 +1,16 @@
+version: '3'
+services:
+  db-menu:
+    image: 'postgres:alpine'
+    volumes:
+      - dbmenu-volume:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: menudb
+      POSTGRES_HOST: postgres
+
+volumes:
+  dbmenu-volume:
