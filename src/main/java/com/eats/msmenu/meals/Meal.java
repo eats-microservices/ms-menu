@@ -66,4 +66,8 @@ public class Meal {
     public Restaurant getRestaurant() {
         return restaurant;
     }
+
+    public void changeAvailability() {
+        this.isAvailable = !getAvailable();
+    }
 }

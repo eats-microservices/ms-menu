@@ -39,20 +39,7 @@ public class MealController {
             @PageableDefault(sort = "name", direction = Sort.Direction.ASC, page = 0, size = 8) Pageable pageable) {
         Page<Meal> page = repository.findAll(pageable);
 
-        Page<MealResponse> pageDto = page
-                .map(p -> new MealResponse(
-                        p.getId(),
-                        p.getName(),
-                        p.getDescription(),
-                        p.getPrice(),
-                        p.getAvailable(),
-                        new RestaurantResponse(
-                                p.getRestaurant().getName(),
-                                p.getRestaurant().getCreatedAt(),
-                                p.getRestaurant().getAddress(),
-                                p.getRestaurant().getRate()
-                        )
-                ));
+        Page<MealResponse> pageDto = page.map(meal -> new MealResponse(meal));
         return ResponseEntity.ok(pageDto);
     }
 
@@ -64,24 +51,11 @@ public class MealController {
             throw new ResourceNotFoundException("Meal with id " + id + " not found.");
         }
 
-        return ResponseEntity
-                .ok(new MealResponse(
-                        meal.get().getId(),
-                        meal.get().getName(),
-                        meal.get().getDescription(),
-                        meal.get().getPrice(),
-                        meal.get().getAvailable(),
-                        new RestaurantResponse(
-                                meal.get().getRestaurant().getName(),
-                                meal.get().getRestaurant().getCreatedAt(),
-                                meal.get().getRestaurant().getAddress(),
-                                meal.get().getRestaurant().getRate()
-                        )
-                ));
+        return ResponseEntity.ok(new MealResponse(meal.get()));
     }
 
     @PostMapping
-    public ResponseEntity<Meal> insertIngredient(@RequestBody @Valid CreateMealRequest request) {
+    public ResponseEntity<MealResponse> insertIngredient(@RequestBody @Valid CreateMealRequest request) {
         Meal meal = request.toModel(restaurantRepository);
         meal = repository.save(meal);
 
@@ -93,7 +67,7 @@ public class MealController {
 
         return ResponseEntity
                 .created(uri)
-                .body(meal);
+                .body(new MealResponse(meal));
     }
 
     @PutMapping("/{id}")
@@ -120,12 +94,20 @@ public class MealController {
         return ResponseEntity.ok(updatedMeal);
     }
 
-    // TODO PATCH AVAILABLE
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/availability")
     public ResponseEntity<?> updateAvailability(@PathVariable Long id) {
-        return null;
-    }
+        Optional<Meal> possibleMeal = repository.findById(id);
 
+        if (possibleMeal.isEmpty()) {
+            throw new ResourceNotFoundException("Meal with id " + id + " not found");
+        }
+
+        Meal meal = possibleMeal.get();
+        meal.changeAvailability();
+        repository.save(meal);
+
+        return ResponseEntity.ok(new MealResponse(meal));
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMeal(@PathVariable Long id) {
