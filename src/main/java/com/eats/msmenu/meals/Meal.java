@@ -26,19 +26,21 @@ public class Meal {
     @Deprecated
     public Meal() {}
 
-    public Meal(String name, String description, BigDecimal price, Boolean isAvailable) {
+    public Meal(String name, String description, BigDecimal price, Boolean isAvailable, Restaurant restaurant) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.isAvailable = isAvailable;
+        this.restaurant = restaurant;
     }
 
-    public Meal(Long id, String name, String description, BigDecimal price, Boolean isAvailable) {
+    public Meal(Long id, String name, String description, BigDecimal price, Boolean isAvailable, Restaurant restaurant) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.price = price;
         this.isAvailable = isAvailable;
+        this.restaurant = restaurant;
     }
 
     public Long getId() {
@@ -59,5 +61,9 @@ public class Meal {
 
     public Boolean getAvailable() {
         return isAvailable;
+    }
+
+    public Restaurant getRestaurant() {
+        return restaurant;
     }
 }
