@@ -2,7 +2,7 @@ spring:
   application:
     name: ms-menu
   datasource:
-    url: jdbc:postgresql://localhost:5432/menudb
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/menudb}
     username: user
     password: 123456
   profiles:
